@@ -1,0 +1,238 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: rgb(243, 244, 246);
+  min-height: 100vh;
+  cursor: pointer;
+}
+
+
+
+header {
+  position: sticky;
+  top: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgb(229, 231, 235);
+  z-index: 10;
+}
+canvas {
+  
+  background-color: #fff;
+  border: 1px solid #ccc;
+  display: block;
+  width: auto;
+  height: 100%;
+  /* margin: auto; */
+  border-radius: 1rem;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo-container i {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: rgb(79, 70, 229);
+}
+
+.logo-container h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: rgb(79, 70, 229);
+}
+
+/* Main content styles */
+main {
+  padding: 1rem;
+}
+
+.grid-container {
+  max-width: 64rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.top-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+/* Cards */
+.main-card {
+  background-color: rgb(17, 24, 39);
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  height: 400px;
+  transition: transform 0.3s ease;
+}
+
+.main-card:hover {
+  transform: scale(1.01);
+}
+
+.secondary-card {
+  background-color: rgba(229, 231, 235, 0.643);
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  height: 400px;
+  transition: transform 0.3s ease;
+  color: rgb(239, 68, 68);
+  font-size: medium;
+  font-weight: bold;
+}
+
+.secondary-card:hover {
+  transform: scale(1.01);
+}
+
+.bottom-card {
+  background-color: transparent;
+  border-radius: 1rem;
+  padding-left: 50px;
+  padding-right: 50px;
+
+  /* box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); */
+  height: 250px;
+  transition: transform 0.3s ease;
+}
+
+.bottom-card:hover {
+  transform: scale(1.01);
+}
+
+/* Record button */
+.record-button {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  border: none;
+  background-color: rgb(79, 70, 229);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.record-button:hover {
+  background-color: rgb(67, 56, 202);
+}
+
+.record-button.recording {
+  background-color: rgb(239, 68, 68);
+  padding-right: 2rem;
+}
+
+.record-button.recording:hover {
+  background-color: rgb(220, 38, 38);
+}
+
+.button-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.button-content i {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.pulse-dot {
+  display: none;
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: white;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.record-button.recording .pulse-dot {
+  display: block;
+}
+
+@keyframes pulse {
+  0% {
+      transform: translateY(-50%) scale(1);
+      opacity: 1;
+  }
+  50% {
+      transform: translateY(-50%) scale(1.2);
+      opacity: 0.5;
+  }
+  100% {
+      transform: translateY(-50%) scale(1);
+      opacity: 1;
+  }
+}
+
+/* Responsive design */
+@media (min-width: 768px) {
+  .top-row {
+      grid-template-columns: 2fr 1fr;
+  }
+
+  .logo-container i {
+      width: 2rem;
+      height: 2rem;
+  }
+
+  .logo-container h1 {
+      font-size: 1.75rem;
+  }
+
+  main {
+      padding: 1.5rem;
+  }
+
+  .grid-container {
+      gap: 1.5rem;
+  }
+  canvas {
+    max-width: 100%;
+    height: auto;
+  }
+  .top-row {
+      gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  main {
+      padding: 2rem;
+  }
+}

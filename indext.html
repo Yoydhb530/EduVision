@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduVision</title>
+    <link rel="stylesheet" href="stylet.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <div class="logo-container">
+                    <i data-lucide="graduation-cap"></i>
+                    <h1>EduVision</h1>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Grid Container -->
+            <div class="grid-container">
+                <!-- Top Row -->
+                <div class="top-row">
+                    <!-- Main Card -->
+                    <div class="main-card" id="webcam-container">
+                        <button class="record-button" id="recordButton" >
+                            <span class="button-content">
+                                <i data-lucide="play"></i>
+                                <span>Start</span>
+                            </span>
+                            <span class="pulse-dot"></span>
+                        </button> 
+                    </div>
+
+                    <!-- Secondary Card -->
+                    <div class="secondary-card"></div>
+                </div>
+
+                <!-- Bottom Card -->
+                <div class="bottom-card"  id="label-container"> 
+                    <canvas id="prediction-chart"></canvas>
+                </div>
+            </div>
+        </main>
+    </div>
+
+       <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Record button functionality
+        const recordButton = document.getElementById('recordButton');
+        let isRecording = false;
+
+        recordButton.addEventListener('click', () => {
+            isRecording = !isRecording;
+            if (isRecording) {
+                recordButton.classList.add('recording');
+                recordButton.querySelector('.button-content').innerHTML = `
+                    <i data-lucide="square"></i>
+                    <span>Stop</span>
+                `;
+                init();
+            } else {
+                recordButton.classList.remove('recording');
+                recordButton.querySelector('.button-content').innerHTML = `
+                    <i data-lucide="play"></i>
+                    <span>Start</span>
+                `;
+                webcam.stop();
+            }
+            lucide.createIcons();
+        });
+    </script>
+<!-- teachable machine import -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+<script type="text/javascript">
+
+    const URL = "https://teachablemachine.withgoogle.com/models/JEGwggKKj/";
+
+    let model, webcam, labelContainer, maxPredictions;
+
+    async function init() {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+
+        
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        const flip = true; // whether to flip the webcam
+        const mainCard = document.querySelector('.main-card');
+        const width = mainCard.offsetWidth;
+        const height = mainCard.offsetHeight;
+        webcam = new tmImage.Webcam(width, height, flip); // width, height, flip
+        await webcam.setup(); // request access to the webcam
+        await webcam.play();
+        window.requestAnimationFrame(loop);
+
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        labelContainer = document.getElementById("label-container");
+        for (let i = 0; i < maxPredictions; i++) { // and class labels
+            labelContainer.appendChild(document.createElement("div"));
+        }
+    }
+
+    async function loop() {
+        webcam.update(); // update the webcam frame
+        await predict();
+        window.requestAnimationFrame(loop);
+    }
+
+    // run the webcam image through the image model
+    async function predict() {
+        // predict can take in an image, video or canvas html element
+        const prediction = await model.predict(webcam.canvas);
+        for (let i = 0; i < maxPredictions; i++) {
+            const classPrediction =
+                prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+            labelContainer.childNodes[i].innerHTML = classPrediction;
+        }
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        labelContainer = document.getElementById("label-container");
+
+        const ctx = document.getElementById('prediction-chart').getContext('2d');
+        chartData = {
+            labels: [],
+            datasets: [{
+                label: 'Prediction Probability',
+                data: [],
+                backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                borderColor: 'rgba(0, 123, 255, 1)',
+                borderWidth: 1
+            }]
+        };
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: chartData,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        async function predict() {
+            const prediction = await model.predict(webcam.canvas);
+            chartData.labels = [];
+            chartData.datasets[0].data = [];
+            for (let i = 0; i < maxPredictions; i++) {
+                const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                labelContainer.childNodes[i].innerHTML = classPrediction;
+                chartData.labels.push(prediction[i].className);
+                chartData.datasets[0].data.push(prediction[i].probability);
+            }
+            chart.update();
+        }
+
+
+        
+    </script>
+
+
+</body>
+</html>
